@@ -28,6 +28,7 @@
   
   <property name="junitJar" value="lib/junit-4.4.jar"/>
   <property name="minidrawJar" value="lib/minidraw.jar"/>
+  <property name="fractalJar" value="lib/fractal.jar"/>
 
   <!-- JaCoCo Coverage analysis -->
   <taskdef uri="antlib:org.jacoco.ant" 
@@ -45,6 +46,7 @@
     <pathelement location="${build-directory}"/>
     <pathelement location="${minidrawJar}"/>
     <pathelement location="${junitJar}"/>
+    <pathelement location="${fractalJar}"/>
   </path>
 
   <target name="help">
@@ -125,6 +127,18 @@ HotCiv build management for dSoftArk MiniDraw Exercises
     <mkdir dir="${doc-directory}"></mkdir>
   </target>
 
+  <target name="runMap" description="runs main method">
+      <java classname="hotciv.standard.RandomMapGeneratorDriver">
+         <classpath refid="class-path"/>
+      </java>
+  </target>
+
+  <target name="runTranscript" description="runs main method">
+      <java classname="hotciv.standard.TranscriptionDriver">
+          <classpath refid="class-path"/>
+      </java>
+  </target>
+
   <target name="javadoc" depends="clean,build-src,mkdirdoc">
     <javadoc
       source = "1.5"
@@ -147,7 +161,15 @@ HotCiv build management for dSoftArk MiniDraw Exercises
   <!-- JUnit testing -->
   <target name="test"  depends="build-all">
     <java classname="org.junit.runner.JUnitCore">
-      <arg value="hotciv.standard.TestAlphaCiv"/>
+        <arg value="hotciv.standard.TestAlphaCiv"/>
+        <arg value="hotciv.standard.TestBetaCiv"/>
+        <arg value="hotciv.standard.TestGammaCiv"/>
+        <arg value="hotciv.standard.TestDeltaCiv"/>
+        <arg value="hotciv.standard.TestEpsilonCiv"/>
+        <arg value="hotciv.standard.TestZetaCiv"/>
+        <arg value="hotciv.standard.TestThetaCiv"/>
+        <arg value="hotciv.standard.TestSemiCiv"/>
+        <arg value="hotciv.standard.TestTranscriptDecorator"/>
       <classpath refid="class-path"/>
     </java>
   </target>
