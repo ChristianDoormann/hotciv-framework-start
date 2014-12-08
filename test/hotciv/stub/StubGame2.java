@@ -84,7 +84,7 @@ public class StubGame2 implements Game {
   public Player getPlayerInTurn() { return inTurn; }
   
 
-  // === Observer handling ===
+  // === ObserverGame handling ===
   protected GameObserver gameObserver;
   // observer list is only a single one...
   public void addObserver(GameObserver observer) {

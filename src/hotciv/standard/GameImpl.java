@@ -4,6 +4,9 @@ package hotciv.standard;
 import hotciv.framework.*;
 import hotciv.standard.Interfaces.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Skeleton implementation of HotCiv.
  * <p/>
@@ -49,6 +52,7 @@ public class GameImpl implements Game {
     private int round;
     private CivFactory civFactory;
     private AllowedUnitStrategy allowedUnitStrategy;
+    private List<GameObserver> observers = new ArrayList<GameObserver>();
 
     public GameImpl(CivFactory civFactory) {
         this.civFactory = civFactory;
@@ -140,6 +144,8 @@ public class GameImpl implements Game {
             return false;
         }
 
+
+
         UnitImpl toUnit = unitMap[to.getRow()][to.getColumn()];
         if (toUnit != null) {
 
@@ -172,7 +178,9 @@ public class GameImpl implements Game {
 
         //All the checks are done, and the move is accepted
         unitMap[from.getRow()][from.getColumn()] = null;
+        notifyObserversWorldChanged(from);
         unitMap[to.getRow()][to.getColumn()] = fromUnit;
+        notifyObserversWorldChanged(to);
 
         //blocks the moving unit from moving more this round.
         fromUnit.setMoveCount(0);
@@ -203,7 +211,10 @@ public class GameImpl implements Game {
             playerInTurn = Player.RED;
         }
 
+        notifyObserversTurnEnds(playerInTurn, gameAge);
+
         getWinner();
+
     }
 
     public void changeWorkForceFocusInCityAt(Position p, String balance) {
@@ -212,16 +223,18 @@ public class GameImpl implements Game {
     public void changeProductionInCityAt(Position p, String unitType) {
         if( allowedUnitStrategy.isValidUnitType( unitType ) ){
             getCityAt(p).setProduction(unitType);
+            notifyObserversWorldChanged(p);
         }
     }
 
     public void performUnitActionAt(Position p) {
         unitActionStrategy.performAction(p,this);
+        notifyObserversWorldChanged(p);
     }
 
     @Override
     public void addObserver(GameObserver observer) {
-
+        observers.add(observer);
     }
 
     @Override
@@ -257,6 +270,8 @@ public class GameImpl implements Game {
                     //Clean up
                     tempUnit = null;
                 }
+
+                notifyObserversWorldChanged(new Position(i, j));
             }
         }
     }
@@ -340,5 +355,23 @@ public class GameImpl implements Game {
     public void resetSuccessfulAttacks(){
         blueSuccessfulAttacks = 0;
         redSuccessfulAttacks = 0;
+    }
+
+    public void notifyObserversTurnEnds( Player player , int age){
+        if(observers == null){
+            return;
+        }
+        for( GameObserver go : observers ){
+            go.turnEnds(player, age);
+        }
+    }
+
+    public void notifyObserversWorldChanged( Position p ){
+        if(observers == null){
+            return;
+        }
+        for( GameObserver go : observers ){
+            go.worldChangedAt(p);
+        }
     }
 }
