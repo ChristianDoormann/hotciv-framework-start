@@ -78,6 +78,8 @@ public class CivDrawing
 
   /** store all moveable figures visible in this drawing = units */
   protected Map<Unit,UnitFigure> figureMap = null;
+
+  protected Map<City,CityFigure> cityMap = null;
    
   /** erase the old list of units, and build a completely new
    * one from scratch by iterating over the game world and add
@@ -111,9 +113,52 @@ public class CivDrawing
         }
       }
     }
+
+    cityMap = new HashMap<City, CityFigure>();
+      for ( int r = 0; r < GameConstants.WORLDSIZE; r++ ) {
+          for ( int c = 0; c < GameConstants.WORLDSIZE; c++ ) {
+              p = new Position(r,c);
+              City city = game.getCityAt(p);
+              if ( city != null ) {
+                  // convert the city's Position to (x,y) coordinates
+                  Point point = new Point( GfxConstants.getXFromColumn(p.getColumn()),
+                          GfxConstants.getYFromRow(p.getRow()) );
+                  CityFigure cityFigure =
+                          new CityFigure(city, point);
+                  cityFigure.addFigureChangeListener(this);
+                  cityMap.put(city, cityFigure);
+
+                  // also insert in delegate list as it is
+                  // this list that is iterated by the
+                  // graphics rendering algorithms
+                  delegate.add(cityFigure);
+              }
+          }
+      }
   }
 
-  private ImageFigure turnShieldIcon;
+  private ImageFigure turnShieldIcon = new ImageFigure();
+  private ImageFigure cityShieldIcon = new ImageFigure();
+  private ImageFigure unitShieldIcon = new ImageFigure();
+  private TextFigure cityProductionText;
+  private TextFigure gameAgeText;
+
+    private void writeWorldAge(){
+        if(gameAgeText != null){
+            delegate.remove(gameAgeText);
+        }
+        String strGameAge;
+        int gameAge = game.getAge();
+        if(gameAge < 0){
+            strGameAge = ""+ Math.abs(gameAge) + " BC";
+        } else {
+            strGameAge = ""+ gameAge + " AC";
+        }
+
+        gameAgeText = new TextFigure(strGameAge, new Point(GfxConstants.AGE_TEXT_X, GfxConstants.AGE_TEXT_Y));
+        delegate.add(gameAgeText);
+    }
+
   private void defineIcons() {
     // very much a template implementation :)
     turnShieldIcon = 
@@ -123,6 +168,7 @@ public class CivDrawing
     // insert in delegate figure list to ensure graphical
     // rendering.
     delegate.add(turnShieldIcon);
+    writeWorldAge();
   }
  
   // === Observer Methods ===
@@ -146,10 +192,34 @@ public class CivDrawing
     turnShieldIcon.set( playername+"shield",
                         new Point( GfxConstants.TURN_SHIELD_X,
                                    GfxConstants.TURN_SHIELD_Y ) );
+
+    writeWorldAge();
   }
 
   public void tileFocusChangedAt(Position position) {
-    System.out.println( "Fake it: tileFocusChangedAt "+position );
+      System.out.println( "Fake it: tileFocusChangedAt "+position );
+
+      City city = game.getCityAt(position);
+
+      if(city != null){
+          cityShieldIcon.set(city.getOwner().toString().toLowerCase()+"shield", new Point( GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
+          delegate.add(cityShieldIcon);
+          cityProductionText = new TextFigure(city.getProduction(), new Point( GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
+          delegate.add(cityProductionText);
+      } else {
+          delegate.remove(cityShieldIcon);
+          delegate.remove(cityProductionText);
+      }
+
+      Unit unit = game.getUnitAt(position);
+
+      if(unit != null){
+          unitShieldIcon.set(unit.getOwner().toString().toLowerCase()+"shield", new Point( GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y ));
+          delegate.add(unitShieldIcon);
+      } else {
+          delegate.remove(unitShieldIcon);
+      }
+
   }
 
   @Override

@@ -180,6 +180,7 @@ public class GameImpl implements Game {
         //All the checks are done, and the move is accepted
         unitMap[from.getRow()][from.getColumn()] = null;
         notifyObserversWorldChanged(from);
+
         unitMap[to.getRow()][to.getColumn()] = fromUnit;
         notifyObserversWorldChanged(to);
 
@@ -376,6 +377,8 @@ public class GameImpl implements Game {
 
     @Override
     public void setTileFocus(Position position) {
-
+        for( GameObserver go : observers ){
+            go.tileFocusChangedAt(position);
+        }
     }
 }
