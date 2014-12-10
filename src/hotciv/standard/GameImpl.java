@@ -172,6 +172,7 @@ public class GameImpl implements Game {
             } else {
                 //You loose, so you get deleted from the game
                 unitMap[from.getRow()][from.getColumn()] = null;
+                notifyObserversWorldChanged(new Position(from.getRow() , from.getColumn()));
                 return false;
             }
         }
@@ -214,7 +215,6 @@ public class GameImpl implements Game {
         notifyObserversTurnEnds(playerInTurn, gameAge);
 
         getWinner();
-
     }
 
     public void changeWorkForceFocusInCityAt(Position p, String balance) {
@@ -230,16 +230,6 @@ public class GameImpl implements Game {
     public void performUnitActionAt(Position p) {
         unitActionStrategy.performAction(p,this);
         notifyObserversWorldChanged(p);
-    }
-
-    @Override
-    public void addObserver(GameObserver observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void setTileFocus(Position position) {
-
     }
 
     public void produceUnits() {
@@ -270,8 +260,6 @@ public class GameImpl implements Game {
                     //Clean up
                     tempUnit = null;
                 }
-
-                notifyObserversWorldChanged(new Position(i, j));
             }
         }
     }
@@ -280,6 +268,7 @@ public class GameImpl implements Game {
 
         int row = cityPosition.getRow();
         int col = cityPosition.getColumn();
+        Position unitSpawned = new Position(row , col);
         //If there is no unit in the city, place the unit here
         if (unitMap[row][col] == null) {
             unitMap[row][col] = unit;
@@ -287,35 +276,44 @@ public class GameImpl implements Game {
         //If there is no unit, ocean or mountain right ABOVE the city, place the unit here.
         else if (unitMap[row-1][col] == null && tileAcceptingUnit(new Position((row-1) , col))) {
             unitMap[row-1][col] = unit;
+            unitSpawned = new Position(row-1,col);
         }
         //If there is no unit, ocean or mountain in the UPPER-RIGHT corner of the city, place the unit here.
         else if (unitMap[row-1][col+1] == null && tileAcceptingUnit(new Position((row-1) , col+1))) {
             unitMap[row-1][col+1] = unit;
+            unitSpawned = new Position(row-1 , col+1);
         }
         //If there is no unit, ocean or mountain directly to the RIGHT of the city, place the unit here.
         else if (unitMap[row][col+1] == null && tileAcceptingUnit(new Position((row) , col+1))) {
             unitMap[row][col+1] = unit;
+            unitSpawned = new Position(row , col+1);
         }
         //If there is no unit, ocean or mountain in the DOWN-RIGHT corner of the city, place the unit here.
         else if (unitMap[row+1][col+1] == null && tileAcceptingUnit(new Position((row+1) , col+1))) {
             unitMap[row+1][col+1] = unit;
+            unitSpawned = new Position(row+1 , col+1);
         }
         //If there is no unit, ocean or mountain directly BELOW the city, place the unit here.
         else if (unitMap[row+1][col] == null && tileAcceptingUnit(new Position((row+1) , col))) {
             unitMap[row+1][col] = unit;
+            unitSpawned = new Position(row+1, col);
         }
         //If there is no unit, ocean or mountain in the  DOWN-LEFT corner of the city, place the unit here.
         else if (unitMap[row+1][col-1] == null && tileAcceptingUnit(new Position((row+1) , col-1))) {
             unitMap[row+1][col-1] = unit;
+            unitSpawned = new Position(row+1 , col-1);
         }
         //If there is no unit, ocean or mountain directly to the LEFT of the city, place the unit here.
         else if (unitMap[row][col-1] == null && tileAcceptingUnit(new Position((row) , col-1))) {
             unitMap[row][col-1] = unit;
+            unitSpawned = new Position(row , col-1);
         }
         //If there is no unit, ocean or mountain in the UPPER-LEFT corner of the city, place the unit here.
         else if (unitMap[row-1][col-1] == null && tileAcceptingUnit(new Position((row-1) , col-1))) {
             unitMap[row-1][col-1] = unit;
+            unitSpawned = new Position(row-1 , col-1);
         }
+        notifyObserversWorldChanged(unitSpawned);
     }
 
     private boolean tileAcceptingUnit(Position p) {
@@ -358,20 +356,26 @@ public class GameImpl implements Game {
     }
 
     public void notifyObserversTurnEnds( Player player , int age){
-        if(observers == null){
-            return;
-        }
+
         for( GameObserver go : observers ){
             go.turnEnds(player, age);
         }
     }
 
     public void notifyObserversWorldChanged( Position p ){
-        if(observers == null){
-            return;
-        }
+
         for( GameObserver go : observers ){
             go.worldChangedAt(p);
         }
+    }
+
+    @Override
+    public void addObserver(GameObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void setTileFocus(Position position) {
+
     }
 }

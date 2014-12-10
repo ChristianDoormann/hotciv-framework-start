@@ -9,25 +9,22 @@ import hotciv.framework.Position;
  */
 public class ObserverGame implements GameObserver {
 
-    public Player player;
-    public int age;
-    public Position position;
+    public String msg = "";
 
     @Override
     public void worldChangedAt(Position pos) {
-        System.out.println("Jeg er en observer, der har fået kaldt worldChangedAt()");
-        this.position = pos;
+        //System.out.println("Jeg er en observer, der har fået kaldt worldChangedAt()");
+        msg += "WorldChangedAt (" + pos.getRow() + "," + pos.getColumn() + ") ";
     }
 
     @Override
     public void turnEnds(Player nextPlayer, int age) {
-        player = nextPlayer;
-        this.age = age;
-        System.out.println("Jeg er en observer, der har fået kaldt turnEnds()");
-    }
+        msg += "Turn has ended";
+       // System.out.println("Jeg er en observer, der har fået kaldt turnEnds()");
+}
 
     @Override
     public void tileFocusChangedAt(Position position) {
-        System.out.println("Jeg er en observer, der har fået kaldt tileFocusChangedAt()");
+       // System.out.println("Jeg er en observer, der har fået kaldt tileFocusChangedAt()");
     }
 }
