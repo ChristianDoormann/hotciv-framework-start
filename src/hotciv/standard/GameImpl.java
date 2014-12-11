@@ -177,6 +177,9 @@ public class GameImpl implements Game {
             }
         }
 
+        //blocks the moving unit from moving more this round.
+        fromUnit.setMoveCount(0);
+
         //All the checks are done, and the move is accepted
         unitMap[from.getRow()][from.getColumn()] = null;
         notifyObserversWorldChanged(from);
@@ -184,8 +187,7 @@ public class GameImpl implements Game {
         unitMap[to.getRow()][to.getColumn()] = fromUnit;
         notifyObserversWorldChanged(to);
 
-        //blocks the moving unit from moving more this round.
-        fromUnit.setMoveCount(0);
+
 
         return true;
     }
