@@ -1,15 +1,12 @@
 package hotciv.visual;
 
+import hotciv.standard.GameImpl;
+import hotciv.standard.Gamma.GammaCivFactory;
+import hotciv.tools.CompositionTool;
 import minidraw.standard.*;
 import minidraw.framework.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
 import hotciv.framework.*;
-import hotciv.view.*;
-import hotciv.stub.*;
 
 /** Template code for exercise FRS 36.44.
 
@@ -30,7 +27,7 @@ import hotciv.stub.*;
 public class ShowComposition {
   
   public static void main(String[] args) {
-    Game game = new StubGame2();
+    Game game = new GameImpl(new GammaCivFactory());
 
     DrawingEditor editor = 
       new MiniDrawApplication( "Click and/or drag any item to see all game actions",  
@@ -39,6 +36,6 @@ public class ShowComposition {
     editor.showStatus("Click and drag any item to see Game's proper response.");
 
     // Replace the setting of the tool with your CompositionTool implementation.
-    editor.setTool( new NullTool() );
+    editor.setTool( new CompositionTool(editor, game) );
   }
 }

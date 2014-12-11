@@ -140,8 +140,9 @@ public class CivDrawing
   private ImageFigure turnShieldIcon = new ImageFigure();
   private ImageFigure cityShieldIcon = new ImageFigure();
   private ImageFigure unitShieldIcon = new ImageFigure();
-  private TextFigure cityProductionText;
+  private TextFigure cityProductionText = new TextFigure("", new Point(GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
   private TextFigure gameAgeText;
+  private TextFigure unitMovesText = new TextFigure("", new Point(GfxConstants.UNIT_COUNT_X, GfxConstants.UNIT_COUNT_Y));
 
     private void writeWorldAge(){
         if(gameAgeText != null){
@@ -197,14 +198,13 @@ public class CivDrawing
   }
 
   public void tileFocusChangedAt(Position position) {
-      System.out.println( "Fake it: tileFocusChangedAt "+position );
 
       City city = game.getCityAt(position);
 
       if(city != null){
-          cityShieldIcon.set(city.getOwner().toString().toLowerCase()+"shield", new Point( GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
+          cityShieldIcon.set(city.getOwner().toString().toLowerCase() + "shield", new Point(GfxConstants.CITY_SHIELD_X, GfxConstants.CITY_SHIELD_Y));
           delegate.add(cityShieldIcon);
-          cityProductionText = new TextFigure(city.getProduction(), new Point( GfxConstants.CITY_PRODUCTION_X, GfxConstants.CITY_PRODUCTION_Y));
+          cityProductionText.setText(city.getProduction());
           delegate.add(cityProductionText);
       } else {
           delegate.remove(cityShieldIcon);
@@ -214,10 +214,13 @@ public class CivDrawing
       Unit unit = game.getUnitAt(position);
 
       if(unit != null){
-          unitShieldIcon.set(unit.getOwner().toString().toLowerCase()+"shield", new Point( GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y ));
+          unitShieldIcon.set(unit.getOwner().toString().toLowerCase() + "shield", new Point(GfxConstants.UNIT_SHIELD_X, GfxConstants.UNIT_SHIELD_Y));
           delegate.add(unitShieldIcon);
+          unitMovesText.setText("" + unit.getMoveCount());
+          delegate.add(unitMovesText);
       } else {
           delegate.remove(unitShieldIcon);
+          delegate.remove(unitMovesText);
       }
 
   }

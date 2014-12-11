@@ -4,12 +4,9 @@ import hotciv.standard.Alpha.AlphaCivFactory;
 import minidraw.standard.*;
 import minidraw.framework.*;
 
-import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 
 import hotciv.framework.*;
-import hotciv.view.*;
 import hotciv.stub.*;
 
 /** Show how GUI changes can be induced by making
@@ -46,24 +43,16 @@ public class ShowUpdating {
     // Try to set the selection tool instead to see
     // completely free movement of figures, including the icon
 
-    editor.setTool( new SelectionTool(editor, game) );
+    //editor.setTool( new SetFocusTool(editor, game) );
   }
 }
 
 class SelectionTool extends NullTool{
 
     private DrawingEditor editor;
-    private Game game;
 
-    public SelectionTool( DrawingEditor editor, Game game ){
+    public SelectionTool( DrawingEditor editor ){
         this.editor = editor;
-        this.game = game;
-    }
-
-    public void mouseDown(MouseEvent e, int x, int y) {
-
-        game.setTileFocus(GfxConstants.getPositionFromXY(x,y));
-
     }
 
 }

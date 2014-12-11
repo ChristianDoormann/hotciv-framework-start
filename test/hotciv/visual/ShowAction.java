@@ -1,15 +1,12 @@
 package hotciv.visual;
 
+import hotciv.standard.GameImpl;
+import hotciv.standard.Gamma.GammaCivFactory;
 import minidraw.standard.*;
 import minidraw.framework.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
 import hotciv.framework.*;
-import hotciv.view.*;
-import hotciv.stub.*;
+import hotciv.tools.*;
 
 /** Template code for exercise FRS 36.43.
 
@@ -30,7 +27,7 @@ import hotciv.stub.*;
 public class ShowAction {
   
   public static void main(String[] args) {
-    Game game = new StubGame2();
+    Game game = new GameImpl(new GammaCivFactory());
 
     DrawingEditor editor = 
       new MiniDrawApplication( "Shift-Click unit to invoke its action",  
@@ -39,6 +36,8 @@ public class ShowAction {
     editor.showStatus("Shift-Click on unit to see Game's performAction method being called.");
 
     // Replace the setting of the tool with your ActionTool implementation.
-    editor.setTool( new NullTool() );
+    editor.setTool( new ActionTool(editor, game) );
   }
 }
+
+

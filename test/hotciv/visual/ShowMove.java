@@ -1,14 +1,11 @@
 package hotciv.visual;
 
+import hotciv.standard.Alpha.AlphaCivFactory;
+import hotciv.tools.MoveTool;
 import minidraw.standard.*;
 import minidraw.framework.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
 import hotciv.framework.*;
-import hotciv.view.*;
 import hotciv.stub.*;
 
 /** Template code for exercise FRS 36.39.
@@ -30,7 +27,7 @@ import hotciv.stub.*;
 public class ShowMove {
   
   public static void main(String[] args) {
-    Game game = new StubGame2();
+    Game game = new StubGame3(new AlphaCivFactory());
 
     DrawingEditor editor = 
       new MiniDrawApplication( "Move any unit using the mouse",  
@@ -39,6 +36,8 @@ public class ShowMove {
     editor.showStatus("Move units to see Game's moveUnit method being called.");
 
     // Replace the setting of the tool with your UnitMoveTool implementation.
-    editor.setTool( new SelectionTool(editor) );
+    editor.setTool( new MoveTool(editor, game) );
   }
 }
+
+
